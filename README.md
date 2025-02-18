@@ -1,0 +1,1 @@
+This code was created for a blogpost about implementing your own animating lists inspired by motion. 
