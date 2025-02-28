@@ -1,6 +1,9 @@
 import { ListItemId, ListProps } from "@/List/ListProps";
-import { AnimDiv } from "@/diy";
+import { AnimDiv, AnimationProps } from "@/diy";
 import "@/List/list.css";
+
+const kInitialState: AnimationProps = { opacity: 0 };
+const kTargetState: AnimationProps = { opacity: 1, options: { duration: 300 } };
 
 export function List<IdType extends ListItemId>({
   ids,
@@ -9,7 +12,14 @@ export function List<IdType extends ListItemId>({
   return (
     <div className="list-root">
       {ids.map((id) => (
-        <AnimDiv key={id}>{renderItem(id)}</AnimDiv>
+        <AnimDiv
+          initial={kInitialState}
+          animate={kTargetState}
+          options={{ duration: 200 }}
+          key={id}
+        >
+          {renderItem(id)}
+        </AnimDiv>
       ))}
     </div>
   );
