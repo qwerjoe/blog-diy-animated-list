@@ -1,6 +1,7 @@
 import { ComponentProps, useLayoutEffect, useRef } from "react";
 import { AnimNode } from "./AnimNode";
 import { Properties, AnimationOptions } from "./types";
+import { usePresence } from "./PresenceChild";
 
 export type Animation = Partial<Properties> & {
   options?: AnimationOptions;
@@ -9,6 +10,7 @@ export type Animation = Partial<Properties> & {
 type AnimDivOwnProps = {
   initial?: Animation;
   animate?: Animation;
+  exit?: Animation;
   options?: AnimationOptions;
 };
 
@@ -17,24 +19,29 @@ export type AnimDivProps = ComponentProps<"div"> & AnimDivOwnProps;
 export function AnimDiv({
   initial,
   animate,
+  exit,
   options,
   ...divProps
 }: AnimDivProps) {
-  const { domRef } = useAnimNode({ initial, animate, options });
+  const { domRef } = useAnimNode({ initial, animate, exit, options });
   return <div {...divProps} ref={domRef} />;
 }
 
 type UseAnimNodeParams = AnimDivOwnProps;
 
-function useAnimNode({ initial, animate, options }: UseAnimNodeParams) {
+function useAnimNode({ initial, animate, exit, options }: UseAnimNodeParams) {
   const animNodeRef = useRef<AnimNode>(new AnimNode());
   const animNode = animNodeRef.current;
+  const target = useRef<Animation>(undefined);
 
   animNode.beforeUpdate();
+
+  const { isPresent, safeToRemove } = usePresence();
 
   useLayoutEffect(() => {
     animNode.mount(initial);
     return () => {
+      target.current = undefined;
       animNode.unmount();
     };
   }, []);
@@ -44,8 +51,21 @@ function useAnimNode({ initial, animate, options }: UseAnimNodeParams) {
   }, [options]);
 
   useLayoutEffect(() => {
-    animNode.animateTo(animate ?? {}, animate?.options);
-  }, [animate]);
+    if (isPresent && target.current !== animate) {
+      target.current = animate;
+      animNode.animateTo(target.current ?? {}, target.current?.options);
+    } else if (!isPresent && target.current !== exit) {
+      target.current = exit;
+      animNode.animateTo(target.current ?? {}, target.current?.options);
+      animNode.setFinishedAnimatingCallback(() => {
+        safeToRemove();
+      });
+    }
+
+    return () => {
+      animNode.setFinishedAnimatingCallback(undefined);
+    };
+  }, [isPresent, animate, exit]);
 
   useLayoutEffect(() => {
     animNode.afterUpdate();
