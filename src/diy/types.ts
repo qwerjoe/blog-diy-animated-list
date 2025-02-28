@@ -1,3 +1,9 @@
+export type Properties = {
+  x: number;
+  y: number;
+  opacity: number;
+};
+
 export type AnimationEasing =
   | "linear"
   | "ease"
