@@ -1,0 +1,26 @@
+.app {
+  padding: 4rem;
+}
+
+.app--change-button {
+  margin-bottom: 2rem;
+  padding: 1rem;
+}
+
+.app--lists-container {
+  display: flex;
+  flex-basis: 1;
+  width: 100%;
+  justify-content: stretch;
+  gap: 1rem;
+
+  & > div {
+    flex-basis: 1;
+    width: 100%;
+  }
+}
+
+.app--select {
+  margin-left: 1rem;
+  padding: 1rem;
+}
