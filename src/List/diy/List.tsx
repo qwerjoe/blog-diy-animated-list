@@ -1,4 +1,5 @@
 import { ListItemId, ListProps } from "@/List/ListProps";
+import { AnimDiv } from "@/diy";
 import "@/List/list.css";
 
 export function List<IdType extends ListItemId>({
@@ -8,7 +9,7 @@ export function List<IdType extends ListItemId>({
   return (
     <div className="list-root">
       {ids.map((id) => (
-        <div key={id}>{renderItem(id)}</div>
+        <AnimDiv key={id}>{renderItem(id)}</AnimDiv>
       ))}
     </div>
   );
