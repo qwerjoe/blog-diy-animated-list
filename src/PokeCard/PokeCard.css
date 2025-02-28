@@ -1,0 +1,41 @@
+.poke-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  background-color: white;
+
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.4rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  height: 4rem;
+  padding: 0.5rem 1rem;
+
+  @media only screen and (min-width: 872px) {
+    flex-direction: column;
+    height: auto;
+    width: 12rem;
+    padding: 1.5rem;
+  }
+}
+
+.poke-card--sprite {
+  max-height: 100%;
+  user-select: none;
+}
+
+.poke-card--name {
+  display: block;
+  text-transform: capitalize;
+  font-weight: bold;
+  font-size: larger;
+  margin-bottom: 0.2rem;
+  user-select: none;
+}
+
+.poke-card--id {
+  display: block;
+  font-size: small;
+  user-select: none;
+}
