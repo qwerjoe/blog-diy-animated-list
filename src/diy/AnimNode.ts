@@ -46,6 +46,8 @@ export class AnimNode {
   } = { target: {} };
 
   private animations: Set<Animation> = new Set();
+  private onFinishedAnimating?: () => void;
+  private dirtyFinishedAnimatingCallback = false;
 
   setDomElement(element: HTMLElement | null) {
     this.domElement = element;
@@ -60,6 +62,11 @@ export class AnimNode {
 
   setDefaultOptions(options: AnimationOptions) {
     this.defaultAnimationOptions = options;
+  }
+
+  setFinishedAnimatingCallback(callback?: () => void) {
+    this.onFinishedAnimating = callback;
+    this.dirtyFinishedAnimatingCallback = true;
   }
 
   beforeUpdate() {
@@ -83,6 +90,13 @@ export class AnimNode {
     const layout = calcLayoutProperties(this.domElement);
     if (this.prev.layout && hasLayoutChanged(this.prev.layout, layout)) {
       this.handleLayoutChange(this.prev.layout, layout);
+    }
+
+    if (this.dirtyFinishedAnimatingCallback) {
+      this.dirtyFinishedAnimatingCallback = false;
+      if (this.onFinishedAnimating && this.animations.size === 0) {
+        this.onFinishedAnimating();
+      }
     }
   }
 
@@ -182,6 +196,9 @@ export class AnimNode {
   private removeAnimation(animation: Animation) {
     animation.cancel();
     this.animations.delete(animation);
+    if (this.animations.size === 0 && this.onFinishedAnimating) {
+      this.onFinishedAnimating();
+    }
   }
 
   private commitAnimationStyles(animation: Animation) {
